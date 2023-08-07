@@ -1,0 +1,10 @@
+{
+  "name": "vulsar",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "peg-cmake": "^0.0.8"
+  }
+}
