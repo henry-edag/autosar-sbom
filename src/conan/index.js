@@ -69,32 +69,50 @@ const initCycloneConanRepo = () =>
 		}
 	});
 
+// const createSBOM = projectRoot =>
+// 	new Promise((rs, rj) => {
+// 		const envCyCon = path.join(conanEnvPath, 'bin/cyclonedx-conan');
+// 		console.log('envCyCon:', envCyCon);
+// 		let r = '';
+// 		execFile(envCyCon, ['-b', 'path_or_reference', projectRoot], (err, stdout, stderr) => {
+// 			err && console.log('err ==>', err.toString());
+// 			stdout && (r = stdout.toString());
+// 			r && console.log('stdout ==>', r);
+// 			stderr && console.log('stderr ==>', stderr.toString());
+// 			rs(r);
+// 		});
+// 	});
+
 const createSBOM = projectRoot =>
 	new Promise((rs, rj) => {
-		const envCyCon = path.join(conanEnvPath, 'bin/cyclonedx-conan');
-		console.log('envCyCon:', envCyCon);
+		// const envCyCon = path.join(conanEnvPath, 'bin/cyclonedx-conan');
+		// console.log('envCyCon:', envCyCon);
 		let r = '';
-		execFile(envCyCon, ['-b', 'path_or_reference', projectRoot], (err, stdout, stderr) => {
-			err && console.log('err ==>', err.toString());
-			stdout && (r = stdout.toString());
-			r && console.log('stdout ==>', r);
-			stderr && console.log('stderr ==>', stderr.toString());
-			rs(r);
+		spawn('cyclonedx-conan', ['-b', 'path_or_reference', projectRoot], ss => {
+			// console.log('===>', ss);
+			rs(ss);
 		});
+		// execFile(envCyCon, ['-b', 'path_or_reference', projectRoot], (err, stdout, stderr) => {
+		// 	err && console.log('err ==>', err.toString());
+		// 	stdout && (r = stdout.toString());
+		// 	r && console.log('stdout ==>', r);
+		// 	stderr && console.log('stderr ==>', stderr.toString());
+		// 	rs(r);
+		// });
 	});
 
 const doConan = projectRoot => {
-	return initConanEnv()
-		.then(() => initCycloneConanRepo())
-		.then(() => installCycloneConan())
-		.then(() => createSBOM(projectRoot))
-		.then((s = '') => {
-			const m = s.match(/[\r\n]+\{[\r\n]+/);
-			if (m) {
-				return s.substr(m.index);
-			}
-			return false;
-		});
+	// return initConanEnv()
+	// 	.then(() => initCycloneConanRepo())
+	// 	.then(() => installCycloneConan())
+	// 	.then(() => createSBOM(projectRoot))
+	return createSBOM(projectRoot).then((s = '') => {
+		const m = s.match(/[\r\n]+\{[\r\n]+/);
+		if (m) {
+			return s.substr(m.index);
+		}
+		return false;
+	});
 };
 
 module.exports = {doConan};
